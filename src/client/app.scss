@@ -1,0 +1,126 @@
+@import url('https://fonts.googleapis.com/css?family=Exo+2');
+@import url('https://fonts.googleapis.com/css?family=Oxygen');
+body {
+    font-family: Oxygen, sans-serif;
+    background: #474787;
+    font-size:18px;
+    text-align: center;
+}
+a {
+    color:#ff793f;
+}
+h1 {
+    font-family: "Exo 2";
+    color:#fff;
+    color:#ff793f;
+    text-transform: uppercase;
+    text-shadow: 0 1px 1px #2c2c54;
+}
+.simple-form {
+    width:500px;
+    margin:auto;
+    border-radius:20px;
+    background: #f7f1e3;
+    border:solid 5px #aaa69d;
+    box-shadow: 0 5px 0 5px #2c2c54;
+    .contents {
+        padding:20px;
+    }
+    &.loading::before {
+        border-radius: 20px;
+    }
+}
+.form-section {
+    margin-bottom:30px;
+}
+input {
+    outline:none;
+    width:100%;
+    font-size:24px;
+    border:0;
+    border-bottom:solid 1px #d1ccc0;
+    background:transparent;
+    padding:8px 0;
+    color:#2c2c54;
+    box-sizing: border-box;
+    text-align: center;
+    &:focus {
+        border-color:#84817a;
+    }
+    &::placeholder {
+        color:#333;
+        font-size: 16px;
+        padding:20px 0;
+    }
+    transition: all 0.3s;
+}
+label {
+    color:#227093;
+    font-weight: bold;
+}
+.disclaimer {
+    font-size: 14px;
+    color:#aaa69d;
+    display:block;
+    &.error {
+        color:#ff5252;
+    }
+}
+.nice-button {
+    background:#33d9b2;
+    border:solid 2px #fff;
+    border-radius: 10px;
+    font-size:18px;
+    line-height: 60px;
+    padding: 0 50px;
+    color:#2c2c54;
+    box-shadow: 0 2px 2px 0 #84817a;
+    outline:none;
+    &[disabled] {
+        opacity:0.5;
+        box-shadow: none;
+    }
+}
+
+.protected-area {
+    canvas {
+        display: block;
+        margin:auto;
+    }
+}
+
+/* loading indicator */
+.loading {
+    position: relative;
+    &::before {
+        content:"";
+        display:block;
+        position:absolute;
+        top:0;
+        right:0;
+        bottom:0;
+        left:0;
+        background:rgba(255,255,255,0.7);
+        z-index:1051;
+    }
+    &::after {
+        content:"";
+        display:block;
+        position:absolute;
+        left:50%;
+        top:50%;
+        margin:-25px 0 0 -25px;
+        width: 49px;
+        height: 49px;
+        border: 3px solid #ff793f;
+        border-radius: 50%;
+        border-left-color: transparent;
+        border-right-color: transparent;
+        animation: cssload-spin 575ms infinite linear;
+        z-index:1052;
+    }
+}
+
+@keyframes cssload-spin {
+    100%{ transform: rotate(360deg); transform: rotate(360deg); }
+}
