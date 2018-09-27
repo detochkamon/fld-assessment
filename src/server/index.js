@@ -21,7 +21,8 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(express.static('dist'));
+app.use(express.static(path.join(__dirname, '../../dist')));
+//app.use(express.static('dist'));
 
 const User = mongoose.model('User', UserSchema);
 
@@ -52,7 +53,7 @@ passport.deserializeUser(function(id, done) {
 });
 
 app.get('/login', (req, res) => {
-    res.sendFile(path.join(__dirname + '../../../dist/index.html'));
+    res.sendFile(path.join(__dirname, '../../dist/index.html'));
 });
 app.post('/api/checkLoggedIn', (req, res) => {
     if (req.user) {
