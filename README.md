@@ -45,3 +45,24 @@ npm start
 ## Live demo
 
 http://dysprosiumlabs.com:8080/
+
+## API
+All API methods should return JSON response:
+```
+{
+    success: boolean,
+    data: object | null,
+    [reason: <error_code>]
+}
+```
+See `/src/GenericResponse.js` for available error codes.
+
+
+| Name | Method | Parameters | Description |
+| --- | --- | --- | --- |
+| /api/check-username | POST | `username:string` | Checks if user with given `username` already exists |
+| /api/register | POST | `fullname:string`<br>`username:string`<br>`password:string` | Registers new user in DB, `fullname` is optional, `username` and `password` should be at least 1 character long. |
+| /api/authenticate | POST | `username:string`<br>`password:string` | Authenticates user using give `username` and `password` |
+| /api/deauthenticate | GET |  | Deauthenticates previously authenticated user |
+| /api/checkLoggedIn | POST |  | Returns `success:true` if user was successfully authenticated |
+
