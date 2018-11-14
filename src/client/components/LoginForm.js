@@ -1,81 +1,104 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect, useReducer } from 'react';
 import axios from 'axios';
 import {Link} from 'react-router-dom';
 
-class LoginForm extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            authenticationInProgress: false,
-            authenticationFailed: false,
-            successfulLogin: false,
-            username: '',
-            password: ''
-        };
-        this.login = this.login.bind(this);
-        this.onUsernameChanged = this.onUsernameChanged.bind(this);
-        this.onPasswordChanged = this.onPasswordChanged.bind(this);
+function LoginForm (props) {
+    //use hooks approach for form inputs
+    const [form, setFormValues] = useState({
+        username: '',
+        password: ''
+    });
+    //use Redux approach (but with React hooks) for form logic
+    const [state, dispatch] = useReducer(reducer, {
+        canLogin: false,
+        authenticationInProgress: false,
+        authenticationFailed: false,
+        successfulLogin: false,
+    });
+    useEffect(() => {
+        if (state.successfulLogin) {
+            props.onSuccessfulLogin(form.username.trim());
+        }
+    }, [state.successfulLogin]);
+    function reducer(state, action) {
+        switch (action.type) {
+            case 'form-change':
+                return {
+                    ...state,
+                    canLogin: form.username.trim().length > 0 || form.password.length > 0
+                }
+            case 'authentication-success':
+                return {
+                    ...state,
+                    successfulLogin: true,
+                    authenticationFailed: false,
+                    authenticationInProgress: false
+                }
+            case 'authentication-fail':
+                return {
+                    ...state,
+                    successfulLogin: false,
+                    authenticationFailed: true,
+                    authenticationInProgress: false
+                };
+            case 'submit':
+                state.canLogin && login();
+                return {
+                    ...state,
+                    authenticationInProgress: state.canLogin
+                };
+            default:
+                return state;
+        }
     }
-    login() {
-        const username = this.state.username;
-        const password = this.state.password;
-        this.setState({
-            authenticationInProgress: true
-        });
+    function login() {
         axios.post('/api/authenticate', {
-            username,
-            password
+            username: form.username.trim(),
+            password: form.password
         }).then(res => {
-            this.setState({
-                successfulLogin: res.data.success === true,
-                authenticationFailed: !res.data.success,
-                authenticationInProgress: false
-            }, () => {
-                this.state.successfulLogin && this.props.onSuccessfulLogin(username);
-            });
+            dispatch({
+                type: res.data.success ? 'authentication-success' : 'authentication-fail'
+            })
         }).catch(() => {
-            this.setState({
-                successfulLogin: false,
-                authenticationFailed: true,
-                authenticationInProgress: false
-            });
+            dispatch({
+                type: 'authentication-fail'
+            })
         });
     }
-    onUsernameChanged(e) {
-        this.setState({
-            username: e.target.value.trim()
+    function handleInputChange(e) {
+        setFormValues({
+            ...form,
+            [e.target.name]: e.target.value
+        });
+        dispatch({
+            type: 'form-change'
         });
     }
-    onPasswordChanged(e) {
-        this.setState({
-            password: e.target.value
-        });
-    }
-    render() {
-        return (
-            <div className={this.state.authenticationInProgress ? "simple-form loading" : "simple-form"}>
-                <div className="contents">
-                    <h1>Sign In</h1>
+    return (
+        <div className={state.authenticationInProgress ? "simple-form loading" : "simple-form"}>
+            <div className="contents">
+                <h1>Sign In</h1>
+                <form onSubmit={(e) => { dispatch({type:'submit'}); e.preventDefault() }}>
                     <div className="form-section">
                         <label>What is your username?</label>
-                        <input type="text" placeholder="Username" value={this.props.username} onChange={this.onUsernameChanged}/>
+                        <input type="text" name="username" placeholder="Username" value={props.username} onChange={handleInputChange}/>
                         <span className="disclaimer">Enter Username specified during registration</span>
                     </div>
                     <div className="form-section">
                         <label>What is your password?</label>
-                        <input type="password" placeholder="Password" value={this.props.password} onChange={this.onPasswordChanged}/>
+                        <input type="password" name="password" placeholder="Password" value={props.password} onChange={handleInputChange}/>
                         <span className="disclaimer">Only you know the right one</span>
                     </div>
-                    {this.state.authenticationFailed ? (
+                    {state.authenticationFailed ? (
                         <p><span className="disclaimer error">Invalid Username or Password</span></p>
                     ) : (
                         <p><span className="disclaimer">&nbsp;</span></p>
                     )}
-                    <button className="nice-button" onClick={this.login} disabled={this.state.username.length === 0 || this.state.password.length === 0}>Let me in</button>
-                    <p><Link to="/register">Don't have an account yet?</Link></p>
-                </div>
+                    <button className="nice-button" type="submit" disabled={!state.canLogin}>Let me in</button>
+                </form>
+                <p><Link to="/register">Don't have an account yet?</Link></p>
             </div>
-        );
-    }
+        </div>
+    );
 }
 export default LoginForm;

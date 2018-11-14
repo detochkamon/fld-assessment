@@ -55,6 +55,10 @@ passport.deserializeUser(function(id, done) {
 app.get('/login', (req, res) => {
     res.sendFile(path.join(__dirname, '../../dist/index.html'));
 });
+app.get('/register', (req, res) => {
+    res.sendFile(path.join(__dirname, '../../dist/index.html'));
+});
+
 app.post('/api/checkLoggedIn', (req, res) => {
     if (req.user) {
         res.send(GenericResponse.success({username: req.user.username}));
