@@ -19,7 +19,10 @@ function LoginForm (props) {
         if (state.successfulLogin) {
             props.onSuccessfulLogin(form.username.trim());
         }
-    }, [state.successfulLogin]);
+        if (state.authenticationInProgress) {
+            login();
+        }
+    }, [state.successfulLogin, state.authenticationInProgress]);
     function reducer(state, action) {
         switch (action.type) {
             case 'form-change':
@@ -42,7 +45,6 @@ function LoginForm (props) {
                     authenticationInProgress: false
                 };
             case 'submit':
-                state.canLogin && login();
                 return {
                     ...state,
                     authenticationInProgress: state.canLogin
@@ -75,7 +77,7 @@ function LoginForm (props) {
         });
     }
     return (
-        <div className={state.authenticationInProgress ? "simple-form loading" : "simple-form"}>
+        <div className={"simple-form" + (state.authenticationInProgress ? " loading" : "")}>
             <div className="contents">
                 <h1>Sign In</h1>
                 <form onSubmit={(e) => { dispatch({type:'submit'}); e.preventDefault() }}>
